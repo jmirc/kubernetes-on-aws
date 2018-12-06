@@ -158,6 +158,9 @@ systemd:
       --register-node \
       --node-labels=kubernetes.io/role=worker \
       --node-labels=kubernetes.io/node-pool={{ .NodePool.Name }}{{if index .NodePool.ConfigItems "labels"}},{{.NodePool.ConfigItems.labels}}{{end}} \
+{{- if and (eq .Values.spot_price "") (eq .Cluster.ConfigItems.experimental_cluster_lifecycle_controller "true") }}
+      --node-labels=cluster-lifecycle-controller.zalan.do/replacement-strategy=prepare-replacement \
+{{- end }}
       --node-labels=aws.amazon.com/spot={{if ne .Values.spot_price ""}}true{{else}}false{{end}} \
       --node-labels={{ .Values.node_labels }} \
       --cluster-dns=${PRIVATE_EC2_IPV4},10.3.0.11 \
